@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.stock.mapper.StockQuoteMapper">
+    
+    <resultMap type="StockQuote" id="StockQuoteResult">
+        <result property="quoteId"    column="quote_id"    />
+        <result property="stockType"    column="stock_type"    />
+        <result property="stockCode"    column="stock_code"    />
+        <result property="stockName"    column="stock_name"    />
+        <result property="latestPrice"    column="latest_price"    />
+        <result property="riseFallAmt"    column="rise_fall_amt"    />
+        <result property="riseFallRate"    column="rise_fall_rate"    />
+        <result property="tradeVolume"    column="trade_volume"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectStockQuoteVo">
+        select quote_id, stock_type, stock_code, stock_name, latest_price, rise_fall_amt, rise_fall_rate, trade_volume, update_time from stock_quote
+    </sql>
+
+    <select id="selectStockQuoteList" parameterType="StockQuote" resultMap="StockQuoteResult">
+        <include refid="selectStockQuoteVo"/>
+        <where>  
+            <if test="stockType != null  and stockType != ''"> and stock_type = #{stockType}</if>
+            <if test="stockCode != null  and stockCode != ''"> and stock_code = #{stockCode}</if>
+            <if test="stockName != null  and stockName != ''"> and stock_name like concat('%', #{stockName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectStockQuoteByQuoteId" parameterType="Long" resultMap="StockQuoteResult">
+        <include refid="selectStockQuoteVo"/>
+        where quote_id = #{quoteId}
+    </select>
+
+    <insert id="insertStockQuote" parameterType="StockQuote" useGeneratedKeys="true" keyProperty="quoteId">
+        insert into stock_quote
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="stockType != null and stockType != ''">stock_type,</if>
+            <if test="stockCode != null and stockCode != ''">stock_code,</if>
+            <if test="stockName != null and stockName != ''">stock_name,</if>
+            <if test="latestPrice != null">latest_price,</if>
+            <if test="riseFallAmt != null">rise_fall_amt,</if>
+            <if test="riseFallRate != null">rise_fall_rate,</if>
+            <if test="tradeVolume != null">trade_volume,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="stockType != null and stockType != ''">#{stockType},</if>
+            <if test="stockCode != null and stockCode != ''">#{stockCode},</if>
+            <if test="stockName != null and stockName != ''">#{stockName},</if>
+            <if test="latestPrice != null">#{latestPrice},</if>
+            <if test="riseFallAmt != null">#{riseFallAmt},</if>
+            <if test="riseFallRate != null">#{riseFallRate},</if>
+            <if test="tradeVolume != null">#{tradeVolume},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateStockQuote" parameterType="StockQuote">
+        update stock_quote
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stockType != null and stockType != ''">stock_type = #{stockType},</if>
+            <if test="stockCode != null and stockCode != ''">stock_code = #{stockCode},</if>
+            <if test="stockName != null and stockName != ''">stock_name = #{stockName},</if>
+            <if test="latestPrice != null">latest_price = #{latestPrice},</if>
+            <if test="riseFallAmt != null">rise_fall_amt = #{riseFallAmt},</if>
+            <if test="riseFallRate != null">rise_fall_rate = #{riseFallRate},</if>
+            <if test="tradeVolume != null">trade_volume = #{tradeVolume},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where quote_id = #{quoteId}
+    </update>
+
+    <delete id="deleteStockQuoteByQuoteId" parameterType="Long">
+        delete from stock_quote where quote_id = #{quoteId}
+    </delete>
+
+    <delete id="deleteStockQuoteByQuoteIds" parameterType="String">
+        delete from stock_quote where quote_id in 
+        <foreach item="quoteId" collection="array" open="(" separator="," close=")">
+            #{quoteId}
+        </foreach>
+    </delete>
+</mapper>
